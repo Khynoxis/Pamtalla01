@@ -87,21 +87,42 @@
     .product-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:linear-gradient(180deg,var(--accent1),var(--accent2));opacity:.95}
 
     .pc-media{
-      height:240px;                       /* más alto para imagen cuadrada */
+      height:270px;                       /* alto para imagen cuadrada */
       background:linear-gradient(135deg, rgba(0,179,255,.35), rgba(34,109,170,.25));
       display:flex;align-items:center;justify-content:center;overflow:hidden
     }
     .pc-media img{
       width:100%;height:100%;
-      object-fit:contain;                 /* para imágenes cuadradas */
+      object-fit:contain;                 /* respeta proporciones */
       background:transparent;
     }
-    .pc-body{padding:16px;display:flex;flex-direction:column;gap:10px}
-    .pc-titulo{font-size:30px;font-weight:900;margin:0}
+
+    /* ===== Cuerpo y acciones de la tarjeta (única versión) ===== */
+    .pc-body{
+      padding:16px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      flex:1;                              /* el cuerpo llena la tarjeta */
+    }
+    .pc-titulo{font-size:20px;font-weight:900;margin:0}
     .pc-chips{display:flex;flex-wrap:wrap;gap:8px}
     .chip{font-size:18px;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25)}
-    .pc-actions{margin-top:auto;display:flex;gap:10px;align-items:center;justify-content:flex-end}
-    .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:14px 18px;border-radius:16px;font-size:22px;font-weight:800;color:#fff;text-decoration:none;border:1.5px solid rgba(255,255,255,.35);background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));transition:transform .18s ease, box-shadow .22s ease, border-color .22s ease, background .22s ease;backdrop-filter:blur(8px);cursor:pointer;user-select:none}
+    .pc-actions{
+      margin-top:auto;                     /* empuja el bloque al fondo */
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:center;              /* centrado horizontal */
+    }
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;gap:10px;
+      padding:14px 18px;border-radius:16px;font-size:22px;font-weight:800;color:#fff;text-decoration:none;
+      border:1.5px solid rgba(255,255,255,.35);
+      background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
+      transition:transform .18s ease, box-shadow .22s ease, border-color .22s ease, background .22s ease;
+      backdrop-filter:blur(8px);cursor:pointer;user-select:none
+    }
     .btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.5)}
 
     /* ===== Panel Videos (2 tarjetas lado a lado) ===== */
@@ -129,6 +150,25 @@
       position:absolute;top:26px;right:26px;width:56px;height:56px;border-radius:14px;border:1px solid #cfd6de;background:#fff;cursor:pointer;font-size:28px;font-weight:900
     }
     .modal video{width:100%;height:auto;border-radius:12px;border:1px solid #e5e9f0}
+
+    /* ===== Imagen grande arriba en el modal ===== */
+    .modal-hero{
+      width:100%;
+      max-height:820px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:linear-gradient(135deg, rgba(0,179,255,.15), rgba(34,109,170,.10));
+      border:1px solid #e5e9f0;
+      border-radius:12px;
+      margin:0 0 16px 0;
+      overflow:hidden;
+    }
+    .modal-hero img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+    }
 
     /* ===== Logo inferior ===== */
     .logo-promelsa{position:absolute;bottom:60px;left:50%;transform:translateX(-50%);width:400px;height:auto}
@@ -283,26 +323,26 @@
         </div>
       </div>
 
-      <!-- PANEL: VIDEOS (déjalo si cuentas con ellos; si no, puedes ocultar esta pestaña) -->
+      <!-- PANEL: VIDEOS -->
       <div class="panel" id="panelVideos">
         <div class="grid-videos">
           <div class="video-card">
             <div class="video-poster open-video" data-src="productos/20220406_3M Temflex 155 y 165 - Scotch Super 33+.mp4">
-              <img src="videos/v1.jpg" alt="Video 1 - Aplicación">
+              <img src="productos/prev1.png" alt="Video 1 - Aplicación">
               <div class="play-badge">▶</div>
             </div>
             <div class="video-info">
-              <h4>Video 1 — Aplicación</h4>
-              <p>Demostración rápida de uso y mejores prácticas.</p>
+              <h4>Video 1 — Una Cinta para cada Tarea</h4>
+              <p>Demostración rápida de las cintas.</p>
             </div>
           </div>
           <div class="video-card">
-            <div class="video-poster open-video" data-src="videos/v2.mp4">
-              <img src="videos/v2.jpg" alt="Video 2 - Beneficios">
+            <div class="video-poster open-video" data-src="productos/scotrh 23.mp4">
+              <img src="productos/prev2.png" alt="Video 2 - Beneficios">
               <div class="play-badge">▶</div>
             </div>
             <div class="video-info">
-              <h4>Video 2 — Beneficios</h4>
+              <h4>Video 2 — Cinta Scotch 23</h4>
               <p>Resultados, seguridad y rendimiento en acción.</p>
             </div>
           </div>
@@ -347,12 +387,25 @@
     modalClose.addEventListener('click', closeModal);
     modal.addEventListener('click', e=>{ if(e.target === modal) closeModal(); });
 
-    // Abrir modal de "Aprender más"
+    // Abrir modal de "Aprender más" con imagen grande arriba
     document.querySelectorAll('.open-info').forEach(btn=>{
       btn.addEventListener('click', ()=>{
-        const title = btn.dataset.title || 'Información';
-        const info  = (btn.dataset.info || '').split('•').filter(t=>t.trim()).map(t=>'<li>'+t.trim()+'</li>').join('');
-        openModal(`<h3>${title}</h3><ul>${info}</ul>`);
+        const card  = btn.closest('.product-card');
+        const imgEl = card ? card.querySelector('.pc-media img') : null;
+        const imgSrc = imgEl ? imgEl.getAttribute('src') : '';
+        const imgAlt = imgEl ? imgEl.getAttribute('alt') : '';
+        const title  = btn.dataset.title || imgAlt || 'Información';
+        const info   = (btn.dataset.info || '')
+          .split('•')
+          .filter(t=>t.trim())
+          .map(t=>`<li>${t.trim()}</li>`)
+          .join('');
+
+        const hero = imgSrc
+          ? `<div class="modal-hero"><img src="${imgSrc}" alt="${imgAlt}"></div>`
+          : '';
+
+        openModal(`${hero}<h3>${title}</h3><ul>${info}</ul>`);
       });
     });
 

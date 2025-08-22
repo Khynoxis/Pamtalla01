@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <title>Trivia 3M | Juega y Gana</title>
+
+  <style>
+    :root{
+      --w:1080px; --h:1920px;
+      --accent1:#00B3FF; --accent2:#226DAA;
+      --glass-a:rgba(255,255,255,0.12); --glass-b:rgba(255,255,255,0.06); --glass-brd:rgba(255,255,255,0.35);
+      --text:#fff; --text-dim:rgba(255,255,255,0.85);
+      --ok:#19c37d; --bad:#ff5252;
+    }
+
+    html,body{margin:0;padding:0;height:100%;background:#000;font-family:system-ui,sans-serif;overflow:hidden;}
+    .pantalla{
+      position:relative;width:var(--w);height:var(--h);margin:0 auto;display:flex;align-items:center;justify-content:center;background:#000;
+      background-image:url('Imagenes/Pantalla01.jpg');background-size:cover;background-position:center;background-repeat:no-repeat;isolation:isolate;overflow:hidden;
+    }
+    .pantalla::before{
+      content:"";position:absolute;inset:0;
+      background:linear-gradient(120deg, rgba(0,179,255,.75), rgba(34,109,170,.5), rgba(4,140,182,.25));
+      background-size:200% 200%;animation:bgMove 6s ease-in-out infinite;z-index:0;
+    }
+    @keyframes bgMove{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+    .pantalla>*{position:relative;z-index:1}
+
+    /* ===== Barra superior ===== */
+    .barra-superior{
+      position:absolute;top:60px;left:50%;transform:translateX(-50%);
+      width:var(--w);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:24px 28px;gap:16px;z-index:2;pointer-events:none;
+    }
+    .btn-back{
+      grid-column:1;justify-self:start;pointer-events:auto;
+      display:inline-flex;align-items:center;justify-content:center;margin-left:130px;
+      width:72px;height:72px;font-size:0;color:transparent;background:rgba(0,0,0,.35);
+      border:2px solid rgba(255,255,255,.45);border-radius:18px;backdrop-filter:blur(6px);cursor:pointer;text-decoration:none;
+      transition:transform .2s ease, background .2s ease;user-select:none;
+    }
+    .btn-back:hover{transform:scale(1.05);background:rgba(0,0,0,.5)}
+    .btn-back:active{transform:scale(.95)}
+    .btn-back img{width:120px;height:120px;object-fit:contain;display:block;pointer-events:none;filter:drop-shadow(0 0 6px rgba(0,0,0,.35))}
+    .logo-marca{grid-column:2;justify-self:center;width:520px;max-width:80%;height:auto;margin:0;display:block;pointer-events:none}
+
+    /* ===== Contenido SIN SCROLL ===== */
+    .contenido{
+      position:absolute;left:50%;transform:translateX(-50%);
+      width:calc(var(--w) - 80px);
+      top:240px; bottom:150px;
+      overflow:hidden;
+      display:flex;flex-direction:column;gap:12px;justify-content:flex-start;
+    }
+
+    .titulo-seccion{
+      text-align:center;color:var(--text);
+      font-size:56px;font-weight:900;letter-spacing:.5px;margin:0 0 6px 0;
+      text-shadow:0 2px 12px rgba(0,0,0,.45);
+    }
+    .subtitulo{
+      text-align:center;color:var(--text-dim);font-size:22px;margin:0 0 8px 0;
+    }
+
+    /* ===== Trivia ===== */
+    .trivia-wrap{
+      height:90%;display:grid;place-items:center;
+    }
+    .trivia-card{
+      width:100%;max-width:980px;min-height:560px;
+      background:linear-gradient(180deg,var(--glass-a),var(--glass-b));
+      border:1.5px solid var(--glass-brd);border-radius:22px;
+      box-shadow:0 10px 26px rgba(0,0,0,.35),0 0 0 1px rgba(255,255,255,.06) inset;
+      padding:22px 24px;display:flex;flex-direction:column;gap:16px;color:#fff;
+      position:relative;overflow:hidden;
+    }
+    .trivia-top{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      font-weight:800;font-size:22px;color:var(--text-dim);
+    }
+    .trivia-top .pill{
+      padding:8px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.25);
+      background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
+      color:#fff;font-size:20px;
+    }
+    .trivia-media{
+      width:100%;aspect-ratio:1/1;border-radius:14px;
+      display:grid;place-items:center;overflow:hidden;
+      background:linear-gradient(135deg, rgba(0,179,255,.28), rgba(34,109,170,.18));
+      border:1px solid rgba(255,255,255,.25);
+    }
+    .trivia-media img{width:100%;height:100%;object-fit:contain}
+    .trivia-q{font-size:30px;font-weight:900;line-height:1.2;margin:4px 0 0 0;text-align:center;text-wrap:balance;text-shadow:0 2px 12px rgba(0,0,0,.45)}
+    .trivia-options{
+      margin-top:auto;display:flex;justify-content:center;gap:18px;flex-wrap:wrap;
+    }
+    .opt{
+      min-width:220px;padding:16px 22px;border-radius:16px;
+      border:1.5px solid rgba(255,255,255,.35);
+      background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
+      font-size:24px;font-weight:900;color:#fff;cursor:pointer;user-select:none;
+      transition:transform .15s ease, border-color .2s ease, background .2s ease;
+      backdrop-filter:blur(8px);
+    }
+    .opt:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.55)}
+    .opt.correct{box-shadow:0 0 0 2px rgba(25,195,125,.5) inset;border-color:var(--ok)}
+    .opt.wrong{box-shadow:0 0 0 2px rgba(255,82,82,.5) inset;border-color:var(--bad)}
+    .trivia-foot{
+      display:flex;justify-content:space-between;align-items:center;margin-top:10px;
+    }
+    .next-btn{padding:14px 18px;border-radius:16px;border:1.5px solid rgba(255,255,255,.35);background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));color:#fff;font-weight:900;font-size:22px;cursor:pointer}
+    .next-btn:disabled{opacity:.5;cursor:not-allowed}
+
+    /* ===== Modal genérico ===== */
+    .modal{position:absolute;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;z-index:5}
+    .modal.open{display:flex}
+    .modal-card{
+      width:880px;max-width:90%;max-height:86%;overflow:auto;background:rgba(255,255,255,.97);color:#111;border-radius:20px;border:1px solid #cfd6de;box-shadow:0 22px 64px rgba(0,0,0,.35);
+      padding:28px 32px;position:relative;
+    }
+    .modal h3{margin:0 0 10px 0;font-size:34px;font-weight:900}
+    .modal p{font-size:22px;line-height:1.45}
+    .modal .close{
+      position:absolute;top:26px;right:26px;width:56px;height:56px;border-radius:14px;border:1px solid #cfd6de;background:#fff;cursor:pointer;font-size:28px;font-weight:900
+    }
+
+    /* ===== Logo inferior ===== */
+    .logo-promelsa{position:absolute;bottom:60px;left:50%;transform:translateX(-50%);width:400px;height:auto}
+  </style>
+</head>
+<body>
+  <main class="pantalla">
+    <!-- Barra superior -->
+    <div class="barra-superior">
+      <button class="btn-back" onclick="history.back()" aria-label="Volver">
+        <img src="Imagenes/back.png" alt="Volver">
+      </button>
+      <img src="Logos/3M.png" alt="Logo 3M" class="logo-marca">
+    </div>
+
+    <!-- Contenido (sin scroll) -->
+    <section class="contenido" aria-label="Trivia 3M">
+      <h1 class="titulo-seccion">Trivia 3M</h1>
+      <p class="subtitulo">Juega y gana. Responde Verdadero o Falso.</p>
+
+      <div class="trivia-wrap">
+        <article class="trivia-card" aria-live="polite">
+          <div class="trivia-top">
+            <span class="pill" id="triProgreso">Pregunta 1 / 6</span>
+            <span class="pill" id="triScore">Puntos: 0</span>
+          </div>
+          <div class="trivia-media"><img id="triImg" src="productos/1.png" alt="Producto"/></div>
+          <h3 class="trivia-q" id="triQ">Cargando…</h3>
+          <div class="trivia-options">
+            <button class="opt" data-v="true"  id="btnV">Verdadero</button>
+            <button class="opt" data-v="false" id="btnF">Falso</button>
+          </div>
+          <div class="trivia-foot">
+            <span id="triFeedback"></span>
+            <button class="next-btn" id="triNext" disabled>Siguiente ▶</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- Logo inferior -->
+    <img src="Logos/Promelsa.png" alt="Logo Promelsa" class="logo-promelsa">
+
+    <!-- Modal reutilizable -->
+    <div class="modal" id="modal">
+      <div class="modal-card" id="modalCard" role="dialog" aria-modal="true">
+        <button class="close" id="modalClose" aria-label="Cerrar">✕</button>
+        <div id="modalContent"></div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    /* ===== Helpers Modal ===== */
+    const modal = document.getElementById('modal');
+    const modalContent = document.getElementById('modalContent');
+    const modalClose = document.getElementById('modalClose');
+    function openModal(html){ modalContent.innerHTML = html; modal.classList.add('open'); }
+    function closeModal(){ modal.classList.remove('open'); modalContent.innerHTML = ''; }
+    modalClose.addEventListener('click', closeModal);
+    modal.addEventListener('click', e=>{ if(e.target === modal) closeModal(); });
+
+    /* =======================
+       TRIVIA: JUEGA Y GANA
+       ======================= */
+
+    // Banco de preguntas (puedes editar textos e imágenes)
+    const QUESTIONS = [
+      { id: 'q155',  text: '¿La cinta Temflex 155 puede soportar altas temperaturas como 120 °C?', img: 'productos/4.png' },
+      { id: 'q165',  text: '¿La cinta Temflex 165 puede trabajar en ambientes exteriores?',     img: 'productos/5.png' },
+      { id: 'q33',   text: '¿La cinta Super 33+ es retardante a las llamas autoextingible?',     img: 'productos/3.png' },
+      { id: 'q2510', text: '¿La cinta cambric 2510 y 2520 tiene protección contra golpes y punzaciones?', img: 'productos/2.png' },
+      { id: 'q23',   text: '¿La cinta de goma 23 representa un sello seguro contra la humedad?', img: 'productos/6.png' },
+      { id: 'q27',   text: '¿La cinta de fibra de vidrio 27 se puede usar en transformadores y bobinas de motores?', img: 'productos/1.png' }
+    ];
+
+    // Clave de respuestas (true = Verdadero, false = Falso)
+    // Ajusta según tus especificaciones técnicas
+    const ANSWER_KEY = {
+      q155: false,  // 155: típica etiqueta 80°C, no 120°C
+      q165: false,  // 165 multipropósito; uso exterior depende de especificación
+      q33:  true,   // Super 33+ flame retardant / autoextinguible
+      q2510:false,  // Cambric no es protección de golpe/punzación
+      q23:  true,   // Goma 23 sella contra humedad
+      q27:  true    // 27 para transformadores/bobinas
+    };
+
+    // Estado
+    let idx = 0, score = 0, locked = false;
+
+    // Elementos
+    const qEl = document.getElementById('triQ');
+    const imgEl = document.getElementById('triImg');
+    const progEl = document.getElementById('triProgreso');
+    const scoreEl = document.getElementById('triScore');
+    const btnV = document.getElementById('btnV');
+    const btnF = document.getElementById('btnF');
+    const nextBtn = document.getElementById('triNext');
+    const feedback = document.getElementById('triFeedback');
+
+    // (Opcional) Mezclar preguntas cada partida
+    function shuffle(arr){
+      for(let i=arr.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [arr[i],arr[j]] = [arr[j],arr[i]];
+      }
+      return arr;
+    }
+    shuffle(QUESTIONS);
+
+    function loadQuestion(){
+      const q = QUESTIONS[idx];
+      qEl.textContent = q.text;
+      imgEl.src = q.img;
+      imgEl.alt = q.text;
+      progEl.textContent = `Pregunta ${idx+1} / ${QUESTIONS.length}`;
+      feedback.textContent = '';
+      [btnV, btnF].forEach(b=>b.classList.remove('correct','wrong'));
+      nextBtn.disabled = true;
+      locked = false;
+    }
+
+    function endGame(){
+      const max = QUESTIONS.length * 100;
+      openModal(`
+        <h3>¡Juego terminado!</h3>
+        <p>Tu puntaje: <strong>${score}</strong> / ${max}</p>
+        <button class="next-btn" onclick="location.reload()">Jugar de nuevo</button>
+      `);
+    }
+
+    function handleAnswer(val){
+      if(locked) return;
+      locked = true;
+      const q = QUESTIONS[idx];
+      const correct = ANSWER_KEY[q.id] === val;
+      const chosenBtn = val ? btnV : btnF;
+
+      if(correct){
+        chosenBtn.classList.add('correct');
+        score += 100;
+        feedback.textContent = '¡Correcto!';
+        feedback.style.color = 'var(--ok)';
+      }else{
+        chosenBtn.classList.add('wrong');
+        feedback.textContent = 'Respuesta incorrecta';
+        feedback.style.color = 'var(--bad)';
+      }
+      scoreEl.textContent = `Puntos: ${score}`;
+      nextBtn.disabled = false;
+    }
+
+    btnV.addEventListener('click', ()=>handleAnswer(true));
+    btnF.addEventListener('click', ()=>handleAnswer(false));
+
+    nextBtn.addEventListener('click', ()=>{
+      if(idx < QUESTIONS.length - 1){
+        idx++;
+        loadQuestion();
+      }else{
+        endGame();
+      }
+    });
+
+    // Inicializa
+    loadQuestion();
+  </script>
+</body>
+</html>
