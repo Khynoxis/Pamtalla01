@@ -9,6 +9,8 @@
     :root {
       --w: 1080px;
       --h: 1920px;
+      --accent1: #00B3FF;
+      --accent2: #226DAA;
     }
 
     html, body {
@@ -26,7 +28,6 @@
       height: var(--h);
       margin: 0 auto;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       background: #000;
@@ -66,40 +67,148 @@
       z-index: 1;
     }
 
-    /* Logo de la marca */
-    .logo-marca {
-      width: 600px;
-      height: auto;
-      margin-top: 200px;
-      margin-bottom: 120px;
+    /* ===== Barra superior con logo centrado y botón volver ===== */
+    .barra-superior {
+      position: absolute;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: var(--w);
+      display: grid;
+      grid-template-columns: 1fr auto 1fr; /* izq: botón | centro: logo | der: espacio */
+      align-items: center;
+      padding: 24px 28px;
+      gap: 16px;
+      z-index: 2;
+      pointer-events: none; /* evita interferir salvo en elementos interactivos */
     }
 
-    /* Botón Home */
-    .btn-home {
-      display: inline-block;
-      padding: 20px 40px;
-      font-size: 36px;
-      font-weight: bold;
-      color: white;
-      background: rgba(255,255,255,0.15);
-      border: 2px solid rgba(255,255,255,0.4);
-      border-radius: 20px;
-      text-decoration: none;
+    .btn-back {
+      grid-column: 1;
+      justify-self: start;
+      pointer-events: auto;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 120px;
+      width: 72px;
+      height: 72px;
+      font-size: 0;             /* <- ya no usamos texto */
+      line-height: 1;
+      color: transparent;        /* <- ocultar texto si lo hubiera */
+      background: rgba(0,0,0,0.35);
+      border: 2px solid rgba(255,255,255,0.45);
+      border-radius: 18px;
       backdrop-filter: blur(6px);
+      cursor: pointer;
+      text-decoration: none;
       transition: transform 0.2s ease, background 0.2s ease;
+      user-select: none;
+    }
+    .btn-back:hover { transform: scale(1.05); background: rgba(0,0,0,0.5); }
+    .btn-back:active { transform: scale(0.95); }
+
+    /* Ícono del botón back */
+    .btn-back img{
+      width: 120px;       /* ajusta a gusto */
+      height: 140px;
+      object-fit: contain;
+      display: block;
+      pointer-events: none; /* evita bloquear el click del botón */
+      filter: drop-shadow(0 0 6px rgba(0,0,0,.35)); /* opcional: contraste */
     }
 
-    .btn-home:hover {
-      transform: scale(1.05);
-      background: rgba(255,255,255,0.25);
+    .logo-marca {
+      grid-column: 2;
+      justify-self: center;
+      width: 520px;   /* ajusta según necesidad */
+      max-width: 80%;
+      height: auto;
+      margin: 0;
+      display: block;
+      pointer-events: none;
     }
 
-    .btn-home:active {
-      transform: scale(0.95);
-      background: rgba(255,255,255,0.1);
+    /* ===== Botones centrales (vertical, formal) ===== */
+    .acciones-centro {
+      display: flex;
+      flex-direction: column; /* uno encima del otro */
+      gap: 64px;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 720px;
+      padding: 16px 28px;
     }
 
-    /* Logo Promelsa en parte inferior */
+    .btn-accion {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 600px;
+      padding: 26px 40px;
+      font-size: 60px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      color: #ffffff;
+      text-decoration: none;
+      border-radius: 20px;
+      backdrop-filter: blur(8px);
+      background: linear-gradient(180deg,
+        rgba(255,255,255,0.10),
+        rgba(255,255,255,0.06)
+      ); /* vidrio sutil */
+      border: 1.5px solid rgba(255,255,255,0.35);
+      box-shadow:
+        0 10px 28px rgba(0,0,0,0.35),
+        0 0 0 1px rgba(255,255,255,0.08) inset;
+      transition: transform 0.18s ease, box-shadow 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+      user-select: none;
+    }
+
+    /* Acento discreto en el borde izquierdo para “corporate look” */
+    .btn-accion::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 6px;
+      border-radius: 20px 0 0 20px;
+      background: linear-gradient(180deg, var(--accent1), var(--accent2));
+      opacity: 0.9;
+    }
+
+    .btn-accion:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255,255,255,0.5);
+      background: linear-gradient(180deg,
+        rgba(255,255,255,0.14),
+        rgba(255,255,255,0.08)
+      );
+      box-shadow:
+        0 12px 30px rgba(0,0,0,0.42),
+        0 0 0 1px rgba(255,255,255,0.12) inset;
+    }
+
+    .btn-accion:active { transform: translateY(0); }
+
+    .btn-accion:focus-visible {
+      outline: 3px solid var(--accent1);
+      outline-offset: 3px;
+    }
+
+    /* Variante con presencia ligeramente mayor (para “Juega y gana”) */
+    .btn-accion.primario {
+      border-color: rgba(0,179,255,0.55);
+      box-shadow:
+        0 12px 34px rgba(0,0,0,0.44),
+        0 0 0 1px rgba(0,179,255,0.25) inset;
+    }
+
+    /* Logo Promelsa en parte inferior (sin cambios) */
     .logo-promelsa {
       position: absolute;
       bottom: 60px;
@@ -113,8 +222,24 @@
 </head>
 <body>
   <main class="pantalla">
-    <img src="Logos/3M.png" alt="Logo 3M" class="logo-marca">
-    <a href="index.html" class="btn-home">🏠 Home</a>
+    <!-- Barra superior: botón retroceso + logo centrado -->
+    <div class="barra-superior">
+      <!-- Usa tu ruta real del ícono -->
+      <button class="btn-back" onclick="history.back()" aria-label="Volver">
+        <img src="Imagenes/back.png" alt="Volver">
+      </button>
+
+      <img src="Logos/3M.png" alt="Logo 3M" class="logo-marca">
+      <!-- la tercera columna queda vacía para mantener el centrado perfecto -->
+    </div>
+
+    <!-- Contenido central: dos botones en columna -->
+    <div class="acciones-centro">
+      <a href="portafolio3m.html" class="btn-accion">Portafolio</a>
+      <a href="juego.html" class="btn-accion primario">Juega y gana</a>
+    </div>
+
+    <!-- Logo Promelsa (se mantiene) -->
     <img src="Logos/Promelsa.png" alt="Logo Promelsa" class="logo-promelsa">
   </main>
 </body>
